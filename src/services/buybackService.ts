@@ -43,13 +43,16 @@ export async function fetchBuybackData(query: BuybackQuery): Promise<BuybackReco
   const timeoutId = setTimeout(() => controller.abort(), 8000)
 
   try {
-    const resp = await fetch(`/api/basic/176/${query.code}/equity.html`, {
-      signal: controller.signal,
-      headers: {
-        'Accept': 'text/html, */*',
-        'Referer': 'https://stockpage.10jqka.com.cn/'
+    const resp = await fetch(
+      `https://basic.10jqka.com.cn/176/${query.code}/equity.html`,
+      {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'text/html, */*',
+          'Referer': 'https://stockpage.10jqka.com.cn/'
+        }
       }
-    })
+    )
     clearTimeout(timeoutId)
 
     if (!resp.ok) {
@@ -97,7 +100,7 @@ export async function searchStock(keyword: string): Promise<StockSuggestion[]> {
 
   try {
     const resp = await fetch(
-      `/api/search/public/index_keyboard_${encodeURIComponent(keyword)}_hk_5_jsonp.html`,
+      `https://news.10jqka.com.cn/public/index_keyboard_${encodeURIComponent(keyword)}_hk_5_jsonp.html`,
       {
         signal: controller.signal,
         headers: {
