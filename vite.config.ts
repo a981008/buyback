@@ -16,6 +16,7 @@ function proxyOptions(target: string, referer: string) {
 }
 
 export default defineConfig({
+  base: '/buyback/',
   plugins: [vue()],
   resolve: {
     alias: { '@': '/src' }
