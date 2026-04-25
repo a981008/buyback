@@ -15,6 +15,25 @@
       @query="query"
     />
 
+    <!-- 外部链接 -->
+    <div v-if="stockCode" class="flex justify-end gap-4 -mt-2 mb-4">
+      <a
+        href="javascript:void(0)"
+        @click="openXueqiu"
+        class="text-blue-500 hover:text-blue-700 hover:underline text-sm"
+      >
+        实时报价
+      </a>
+      <span class="text-gray-300">|</span>
+      <a
+        href="javascript:void(0)"
+        @click="open10jqka"
+        class="text-blue-500 hover:text-blue-700 hover:underline text-sm"
+      >
+        数据来源
+      </a>
+    </div>
+
     <LoadingSkeleton v-if="isLoading" />
 
     <template v-if="!isLoading && hasQueried">
@@ -53,4 +72,18 @@ const {
   records, summary, stockInfo, isLoading, error,
   hasQueried, isValid, dateError, query
 } = useBuyback()
+
+function openXueqiu() {
+  if (stockCode.value) {
+    const code = stockCode.value.replace(/^HK/i, "")
+    window.open(`https://xueqiu.com/S/0${code}`, "_blank", "noopener")
+  }
+}
+
+function open10jqka() {
+  if (stockCode.value) {
+    const code = stockCode.value.replace(/^HK/i, "")
+    window.open(`https://stockpage.10jqka.com.cn/HK${code}/equity/#purchase`, "_blank", "noopener")
+  }
+}
 </script>
