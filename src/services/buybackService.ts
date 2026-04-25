@@ -28,7 +28,7 @@ function parseHtmlTable(html: string): BuybackRecord[] {
 
     if (!date) return
 
-    const amount = amountWan   
+    const amount = amountWan
     const shares = sharesWan 
     const avg = shares ? amount / shares : 0
 
@@ -244,6 +244,7 @@ export async function fetchStockRealtime(code: string): Promise<StockRealtimeDat
 export async function fetchStockInfo(code: string): Promise<StockInfo> {
   return new Promise((resolve, reject) => {
     const callbackName = `quotebridge_v6_realhead_hk_${code}_defer_last`
+
     const script = document.createElement('script')
     script.src = `https://d.10jqka.com.cn/v6/realhead/hk_${code}/defer/last.js`
 
@@ -263,7 +264,7 @@ export async function fetchStockInfo(code: string): Promise<StockInfo> {
       const items = data.items
       const price = parseFloat(items['10']) || 0  // 当前价格
       const marketCap = parseFloat(items['3475914']) || 0  // 总市值
-      const totalShares = marketCap / price  || 0  // 总股本
+      const totalShares = price ? marketCap / price : 0  // 总股本
       resolve({ price, marketCap, totalShares })
     }
 

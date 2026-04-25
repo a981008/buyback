@@ -5,7 +5,6 @@ import { normalizeStockCode, validateDateRange } from '../utils/validation'
 
 export function useBuyback() {
   const stockCode = ref('')
-  const stockName = ref('')
   const startDate = ref('')
   const endDate = ref('')
   const records = ref<BuybackRecord[]>([])
@@ -26,9 +25,7 @@ export function useBuyback() {
 
   async function query() {
     if (!isValid.value) {
-      if (!stockCode.value.trim()) {
-        error.value = '请输入有效的股票代码'
-      }
+      error.value = stockCode.value.trim() ? '请选择有效的日期范围' : '请输入有效的股票代码'
       return
     }
 
@@ -78,7 +75,6 @@ export function useBuyback() {
 
   return {
     stockCode,
-    stockName,
     startDate,
     endDate,
     records,

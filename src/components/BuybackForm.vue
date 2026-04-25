@@ -169,24 +169,6 @@ const emit = defineEmits<{
   query: [];
 }>();
 
-/**
- * =========================
- * HK 代码标准化
- * =========================
- */
-function formatHKCode(raw: string): string {
-  let v = raw.replace(/^HK/i, "");
-
-  if (!/^\d+$/.test(v)) return raw;
-
-  // 超过4位取最后4位
-  if (v.length > 4) v = v.slice(-4);
-
-  // 不足补0
-  v = v.padStart(4, "0");
-
-  return "HK" + v;
-}
 
 /**
  * =========================
@@ -225,17 +207,17 @@ function calcPresetRange(preset: string | number) {
 
 // 初始化：设置默认日期范围为空（所有）
 onMounted(() => {
-  // 默认使用 'all'，不设置具体日期
-  // 如果历史记录有内容，默认选中第一个并查询
   if (history.value.length > 0) {
-    const first = history.value[0];
-    const [code] = first.split(' - ');
-    stockCode.value = code;
-    stockDisplay.value = first;
-    emit('update:modelValue', code);
-    doQuery();
+    const first = history.value[0]
+    const [code] = first.split(' - ')
+    if (code) {
+      stockCode.value = code
+      stockDisplay.value = first
+      emit('update:modelValue', code)
+      doQuery()
+    }
   }
-});
+})
 
 // 当选择快捷选项时，自动计算日期范围
 watch(datePreset, (preset) => {
@@ -417,34 +399,31 @@ function saveHistory(list: string[]) {
 const history = ref<string[]>(loadHistory());
 
 function addToHistory(code: string, name: string) {
-  const label = `${code} - ${name}`;
-  // 过滤掉和当前标签相同的项，避免重复显示
-  let list = history.value.filter((h) => h !== label);
-  // 添加到最前面
-  list.unshift(label);
+  const label = `${code} - ${name}`
+  const list = history.value.filter(h => h !== label)
+  list.unshift(label)
 
-  // 检查当前行是否能容纳新标签（需要预留一个标签的位置）
   if (historyContainer.value) {
-    const container = historyContainer.value.querySelector('.flex');
+    const container = historyContainer.value.querySelector('.flex')
     if (container) {
-      // 先添加新标签，检测是否溢出（预留一个标签空间）
-      history.value = list;
+      history.value = list
       nextTick(() => {
-        // 如果滚动宽度大于可视宽度+一个标签的预估宽度，则溢出
-        const estimatedTagWidth = 100; // 预估一个标签的宽度
+        const estimatedTagWidth = 100
         if (container.scrollWidth > container.clientWidth + estimatedTagWidth) {
-          list.pop(); // 溢出则淘汰最后一个
-          history.value = list;
-          saveHistory(list);
+          list.pop()
+          history.value = list
+          saveHistory(list)
+        } else {
+          saveHistory(list)
         }
-      });
+      })
     } else {
-      history.value = list;
-      saveHistory(list);
+      history.value = list
+      saveHistory(list)
     }
   } else {
-    history.value = list;
-    saveHistory(list);
+    history.value = list
+    saveHistory(list)
   }
 }
 
@@ -500,15 +479,13 @@ function onFocus() {
 
 function onBlur() {
   // 如果没有选择股票（输入了文字但没选或直接离开），还原之前的标签
-  console.log("onBlur called, prevStockCode:", prevStockCode);
-  if (prevStockCode) {
+    if (prevStockCode) {
     stockCode.value = prevStockCode;
     stockDisplay.value = prevStockDisplay;
     emit("update:modelValue", prevStockCode);
     prevStockCode = "";
     prevStockDisplay = "";
-    console.log("恢复之前的股票：", stockCode.value);
-  }
+      }
   setTimeout(() => {
     showDropdown.value = false;
   }, 200);
