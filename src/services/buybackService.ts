@@ -83,15 +83,35 @@ function filterAndSort(records: BuybackRecord[], query: BuybackQuery): BuybackRe
 
 export function computeSummary(records: BuybackRecord[]): BuybackSummary {
   if (records.length === 0) {
-    return { totalDays: 0, totalAmount: 0, totalShares: 0, avgPrice: 0, maxPrice: 0, minPrice: 0 }
+    return { totalDays: 0, totalAmount: 0, totalShares: 0, avgPrice: 0, avgPriceStartDate: '', avgPriceEndDate: '', maxPrice: 0, maxPriceDate: '', minPrice: 0, minPriceDate: '' }
   }
   const totalDays = records.length
   const totalAmount = records.reduce((s, r) => s + r.amount, 0)
   const totalShares = records.reduce((s, r) => s + r.shares, 0)
   const avgPrice = totalShares ? totalAmount / totalShares : 0
-  const maxPrice = Math.max(...records.map(r => r.highPrice))
-  const minPrice = Math.min(...records.map(r => r.lowPrice))
-  return { totalDays, totalAmount, totalShares, avgPrice, maxPrice, minPrice }
+
+  let maxRecord = records[0]
+  let minRecord = records[0]
+  for (const r of records) {
+    if (r.highPrice >= maxRecord.highPrice) maxRecord = r
+    if (r.lowPrice <= minRecord.lowPrice) minRecord = r
+  }
+
+  // 按日期排序获取最早和最晚日期
+  const sortedRecords = [...records].sort((a, b) => a.date.localeCompare(b.date))
+
+  return {
+    totalDays,
+    totalAmount,
+    totalShares,
+    avgPrice,
+    avgPriceStartDate: sortedRecords[0].date,
+    avgPriceEndDate: sortedRecords[sortedRecords.length - 1].date,
+    maxPrice: maxRecord.highPrice,
+    maxPriceDate: maxRecord.date,
+    minPrice: minRecord.lowPrice,
+    minPriceDate: minRecord.date
+  }
 }
 
 export async function searchStock(keyword: string): Promise<StockSuggestion[]> {

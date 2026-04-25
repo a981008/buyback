@@ -15,14 +15,17 @@
     <div class="bg-white rounded-lg shadow p-5">
       <div class="text-sm text-gray-500 mb-1">平均回购价格</div>
       <div class="text-2xl font-bold text-gray-900">{{ fmtMoney(summary.avgPrice) }} <span class="text-sm font-normal text-gray-400">HKD</span></div>
+      <div class="text-xs text-gray-400 mt-1">{{ summary.avgPriceStartDate }} ~ {{ summary.avgPriceEndDate }}</div>
     </div>
     <div class="bg-white rounded-lg shadow p-5">
       <div class="text-sm text-gray-500 mb-1">最高回购价格</div>
       <div class="text-2xl font-bold text-gray-900">{{ fmtMoney(summary.maxPrice) }} <span class="text-sm font-normal text-gray-400">HKD</span></div>
+      <div class="text-xs text-gray-400 mt-1">{{ summary.maxPriceDate }}</div>
     </div>
     <div class="bg-white rounded-lg shadow p-5">
       <div class="text-sm text-gray-500 mb-1">最低回购价格</div>
       <div class="text-2xl font-bold text-gray-900">{{ fmtMoney(summary.minPrice) }} <span class="text-sm font-normal text-gray-400">HKD</span></div>
+      <div class="text-xs text-gray-400 mt-1">{{ summary.minPriceDate }}</div>
     </div>
     <div class="bg-white rounded-lg shadow p-5">
       <div class="text-sm text-gray-500 mb-1">当前股价</div>

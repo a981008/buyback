@@ -12,8 +12,12 @@ export interface BuybackSummary {
   totalAmount: number
   totalShares: number
   avgPrice: number
+  avgPriceStartDate: string
+  avgPriceEndDate: string
   maxPrice: number
+  maxPriceDate: string
   minPrice: number
+  minPriceDate: string
 }
 
 export interface BuybackQuery {
