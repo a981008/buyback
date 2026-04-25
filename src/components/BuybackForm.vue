@@ -117,8 +117,8 @@
     <p v-if="dateErr" class="mt-2 text-sm text-red-600">{{ dateErr }}</p>
 
     <!-- 历史选择 -->
-    <div v-if="history.length > 1" class="mt-4 pt-4 border-t border-gray-200">
-      <div class="flex items-center gap-2 overflow-x-auto">
+    <div ref="historyContainer" class="mt-4 pt-4 border-t border-gray-200">
+      <div v-if="history.length > 1" class="flex items-center gap-2 overflow-x-auto">
         <button
           v-for="(item, index) in history.slice(1)"
           :key="index"
@@ -329,6 +329,7 @@ const suggestions = ref<StockSuggestion[]>([]);
 const showDropdown = ref(false);
 const highlightIndex = ref(-1);
 const inputRef = ref<HTMLInputElement | null>(null);
+const historyContainer = ref<HTMLElement | null>(null);
 
 function onInputAreaClick() {
   if (stockCode.value) {
@@ -421,16 +422,42 @@ function addToHistory(code: string, name: string) {
   let list = history.value.filter((h) => h !== label);
   // 添加到最前面
   list.unshift(label);
-  if (list.length > MAX_HISTORY) list.pop();
-  history.value = list;
-  console.log("更新历史记录：", history.value);
-  saveHistory(list);
+
+  // 检查当前行是否能容纳新标签（需要预留一个标签的位置）
+  if (historyContainer.value) {
+    const container = historyContainer.value.querySelector('.flex');
+    if (container) {
+      // 先添加新标签，检测是否溢出（预留一个标签空间）
+      history.value = list;
+      nextTick(() => {
+        // 如果滚动宽度大于可视宽度+一个标签的预估宽度，则溢出
+        const estimatedTagWidth = 100; // 预估一个标签的宽度
+        if (container.scrollWidth > container.clientWidth + estimatedTagWidth) {
+          list.pop(); // 溢出则淘汰最后一个
+          history.value = list;
+          saveHistory(list);
+        }
+      });
+    } else {
+      history.value = list;
+      saveHistory(list);
+    }
+  } else {
+    history.value = list;
+    saveHistory(list);
+  }
 }
 
 function selectFromHistory(item: string, index: number) {
-  // 如果当前有选中的股票，先加入历史
-  if (stockCode.value) {
-    addToHistory(stockCode.value, stockDisplay.value.split(" - ")[1] || "");
+  // 如果当前有选中的股票，先加入历史（从显示列表加入，不包含自己）
+  if (stockCode.value && stockCode.value !== item.split(' - ')[0]) {
+    const currentLabel = stockDisplay.value;
+    // 从显示列表中过滤掉当前标签，避免重复
+    let list = history.value.filter((h) => h !== currentLabel && h !== item);
+    list.unshift(currentLabel);
+    // 检查溢出
+    history.value = list;
+    saveHistory(list);
   }
 
   const [code] = item.split(" - ");
